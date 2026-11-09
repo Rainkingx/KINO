@@ -661,7 +661,7 @@ public class Home extends Activity {
         LinearLayout.LayoutParams sl = (LinearLayout.LayoutParams) search.getLayoutParams();
         sl.width = 0;
         sl.weight = 1;   // fills whatever the screen leaves
-        // KINO expanding search
+        // KINO compact search and right-aligned controls
         if (!App.tv) {
             search.setText("");
             search.setGravity(Gravity.CENTER);
@@ -670,65 +670,12 @@ public class Home extends Activity {
             sl.width = dp(44);
             sl.weight = 0;
 
-            bar.setLayoutTransition(
-                new android.animation.LayoutTransition());
+            search.setOnClickListener(v ->
+                startActivity(new Intent(this, SearchActivity.class)));
 
-            search.setOnClickListener(v -> {
-                logo.setVisibility(View.GONE);
-                name.setVisibility(View.GONE);
-                search.setVisibility(View.GONE);
-
-                android.widget.EditText field =
-                    new android.widget.EditText(this);
-                field.setSingleLine(true);
-                field.setHint("Search movies, TV...");
-                field.setTextColor(TEXT);
-                field.setHintTextColor(MUTED);
-                field.setTextSize(16);
-                field.setPadding(dp(12), 0, dp(8), 0);
-                field.setBackground(rounded(CARD, dp(12)));
-                field.setImeOptions(
-                    android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH);
-
-                LinearLayout.LayoutParams fp =
-                    new LinearLayout.LayoutParams(0, dp(44), 1);
-
-                int position = bar.indexOfChild(search) + 1;
-                bar.addView(field, position, fp);
-
-                TextView close = text("×", 24, TEXT, false);
-                close.setGravity(Gravity.CENTER);
-                close.setContentDescription("Close search");
-                bar.addView(close, position + 1,
-                    new LinearLayout.LayoutParams(dp(40), dp(44)));
-
-                close.setOnClickListener(x -> {
-                    bar.removeView(field);
-                    bar.removeView(close);
-                    logo.setVisibility(View.VISIBLE);
-                    name.setVisibility(View.VISIBLE);
-                    search.setVisibility(View.VISIBLE);
-                });
-
-                field.setOnEditorActionListener((tv, action, event) -> {
-                    String query = field.getText().toString().trim();
-                    if (!query.isEmpty()) {
-                        startActivity(new Intent(this,
-                            SearchActivity.class)
-                            .putExtra("query", query));
-                    }
-                    return true;
-                });
-
-                field.requestFocus();
-                field.post(() -> {
-                    android.view.inputmethod.InputMethodManager imm =
-                        (android.view.inputmethod.InputMethodManager)
-                        getSystemService(INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(field,
-                        android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
-                });
-            });
+            View spacer = new View(this);
+            bar.addView(spacer,
+                new LinearLayout.LayoutParams(0, 1, 1));
         }
         bar.addView(search);
         bar.addView(voiceChip(v -> startActivity(new Intent(this, SearchActivity.class).putExtra("voice", true))));
