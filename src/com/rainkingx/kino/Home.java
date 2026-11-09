@@ -130,12 +130,14 @@ public class Home extends Activity {
     }
 
     @Override protected void onDestroy() {
+        kinoStopRotation();
         Warp.listeners.remove(warpChanged);
         super.onDestroy();
     }
 
     /** Draws the selected tab. Subclasses (search, category, title) replace this whole method. */
     void build() {
+        kinoStopRotation();
         col.removeAllViews();
         firstCard = null;
         built++;
@@ -210,75 +212,126 @@ public class Home extends Activity {
         }
     }
 
-    // KINO cinematic featured movie
+    // KINO cinematic hero carousel
+    FrameLayout kinoHeroView;
+    Runnable kinoHeroRotation;
+    final List<Catalog.Title> kinoHeroTitles = new ArrayList<>();
+    int kinoHeroIndex;
+    float kinoTouchX, kinoTouchY;
+
+    void kinoStopRotation() {
+        if (kinoHeroRotation != null && kinoHeroView != null)
+            kinoHeroView.removeCallbacks(kinoHeroRotation);
+        kinoHeroRotation = null;
+    }
+
     void kinoFeaturedHero() {
         FrameLayout hero = new FrameLayout(this);
-        hero.setLayoutParams(new LinearLayout.LayoutParams(-1, u(335, 246)));
+        hero.setLayoutParams(new LinearLayout.LayoutParams(-1, u(440, 312)));
         hero.setBackground(rounded(CARD, dp(18)));
         hero.setClipToOutline(true);
+        kinoHeroView = hero;
 
-        TextView loading = text("FEATURED ON KINO", sp(24, 20), TEXT, true);
+        TextView loading = text("FEATURED ON KINO", sp(23, 18), TEXT, true);
         loading.setGravity(Gravity.CENTER);
         hero.addView(loading, new FrameLayout.LayoutParams(-1, -1));
         col.addView(hero);
 
         final int generation = built;
         List<Catalog.Title> cached = Catalog.cached("movie", "");
-        if (cached != null) {
+        if (cached != null && !cached.isEmpty())
             kinoShowFeatured(hero, cached);
-        } else {
-            App.io.execute(() -> {
-                List<Catalog.Title> movies = Catalog.list("movie", "");
-                runOnUiThread(() -> {
-                    if (generation == built && tab == 0)
-                        kinoShowFeatured(hero, movies);
-                });
+
+        App.io.execute(() -> {
+            List<Catalog.Title> movies = Catalog.list("movie", "");
+            runOnUiThread(() -> {
+                if (generation == built && tab == 0
+                        && hero == kinoHeroView && movies != null)
+                    kinoShowFeatured(hero, movies);
             });
-        }
+        });
     }
 
     void kinoShowFeatured(FrameLayout hero, List<Catalog.Title> movies) {
+        kinoStopRotation();
+        kinoHeroTitles.clear();
+
+        if (movies != null) {
+            int year = java.time.LocalDate.now().getYear();
+
+            for (Catalog.Title t : movies) {
+                if (t.id.isEmpty() || t.background.isEmpty()) continue;
+                if (!t.year.startsWith("" + year)
+                        && !t.year.startsWith("" + (year - 1))) continue;
+                kinoHeroTitles.add(t);
+                if (kinoHeroTitles.size() == 8) break;
+            }
+
+            for (Catalog.Title t : movies) {
+                if (kinoHeroTitles.size() == 8) break;
+                if (t.id.isEmpty() || t.background.isEmpty()
+                        || kinoHeroTitles.contains(t)) continue;
+                kinoHeroTitles.add(t);
+            }
+
+            for (Catalog.Title t : movies) {
+                if (kinoHeroTitles.size() == 8) break;
+                if (t.id.isEmpty() || t.poster.isEmpty()
+                        || kinoHeroTitles.contains(t)) continue;
+                kinoHeroTitles.add(t);
+            }
+        }
+
+        kinoHeroIndex = 0;
+        kinoRenderHero(hero);
+    }
+
+    void kinoAdvanceHero(int amount) {
+        if (kinoHeroView == null || kinoHeroTitles.size() < 2) return;
+        kinoHeroIndex = (kinoHeroIndex + amount
+                + kinoHeroTitles.size()) % kinoHeroTitles.size();
+        kinoRenderHero(kinoHeroView);
+    }
+
+    void kinoRenderHero(FrameLayout hero) {
+        kinoStopRotation();
         hero.removeAllViews();
 
-        if (movies == null || movies.isEmpty()) {
+        if (kinoHeroTitles.isEmpty()) {
             TextView browse = text("DISCOVER MOVIES", sp(22, 18), TEXT, true);
             browse.setGravity(Gravity.CENTER);
-            browse.setBackground(rounded(CARD, dp(18)));
-            focusable(browse, dp(18));
-            browse.setOnClickListener(v -> selectTab(1));
             hero.addView(browse, new FrameLayout.LayoutParams(-1, -1));
-            if (firstCard == null) firstCard = browse;
+            focusable(hero, dp(18));
+            hero.setOnClickListener(v -> selectTab(1));
+            if (firstCard == null) firstCard = hero;
             return;
         }
 
-        Catalog.Title picked = movies.get(0);
-        for (Catalog.Title candidate : movies) {
-            if (!candidate.background.isEmpty()) {
-                picked = candidate;
-                break;
-            }
-        }
-        final Catalog.Title title = picked;
+        final Catalog.Title title = kinoHeroTitles.get(kinoHeroIndex);
 
         ImageView artwork = new ImageView(this);
         artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
         hero.addView(artwork, new FrameLayout.LayoutParams(-1, -1));
-        String image = title.background.isEmpty() ? title.poster : title.background;
+
+        String image = title.background.isEmpty()
+                ? title.poster : title.background;
         if (!image.isEmpty()) loadImage(artwork, image, null);
 
         View shade = new View(this);
         shade.setBackground(new GradientDrawable(
             GradientDrawable.Orientation.TOP_BOTTOM,
-            new int[]{0x22090B16, 0x99090B16, 0xFA090B16}));
+            new int[]{0x00090B16, 0x33090B16, 0xE8090B16}));
         hero.addView(shade, new FrameLayout.LayoutParams(-1, -1));
 
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(u(24, 16), dp(16), u(24, 16), u(24, 16));
+        content.setPadding(u(30, 18), dp(14), u(30, 18), u(24, 18));
 
-        content.addView(text("FEATURED ON KINO", sp(13, 11), 0xFFB8A5FF, true));
+        content.addView(text(
+            "FEATURED ON KINO",
+            sp(13, 11), 0xFFBBADFF, true));
 
-        TextView name = text(title.name, sp(38, 26), Color.WHITE, true);
+        TextView name = text(title.name, sp(42, 29), Color.WHITE, true);
         name.setMaxLines(2);
         name.setEllipsize(TextUtils.TruncateAt.END);
         content.addView(name);
@@ -286,23 +339,44 @@ public class Home extends Activity {
         String meta = title.year;
         if (!title.rating.isEmpty())
             meta += (meta.isEmpty() ? "" : "  |  ") + "IMDb " + title.rating;
-        TextView metadata = text(meta, sp(15, 12), 0xFFDAD7E8, false);
-        content.addView(metadata);
+        content.addView(text(meta, sp(15, 12), 0xFFDED9F0, false));
 
         if (!title.overview.isEmpty()) {
-            TextView synopsis = text(title.overview, sp(14, 12), 0xFFE1DEEB, false);
-            synopsis.setMaxLines(2);
+            TextView synopsis = text(
+                title.overview, sp(14, 12), 0xFFF2EFFA, false);
+            synopsis.setMaxLines(App.tv ? 3 : 2);
             synopsis.setEllipsize(TextUtils.TruncateAt.END);
-            synopsis.setPadding(0, dp(7), 0, dp(10));
+            synopsis.setPadding(0, dp(8), 0, dp(8));
             content.addView(synopsis);
         }
 
-        TextView details = text("VIEW DETAILS", sp(16, 13), Color.WHITE, true);
-        details.setGravity(Gravity.CENTER);
-        details.setPadding(dp(22), dp(12), dp(22), dp(12));
-        details.setBackground(rounded(ACCENT, dp(12)));
-        focusable(details, dp(12));
-        details.setOnClickListener(v -> startActivity(
+        LinearLayout dots = new LinearLayout(this);
+        dots.setGravity(Gravity.CENTER_VERTICAL);
+
+        for (int i = 0; i < kinoHeroTitles.size(); i++) {
+            TextView dot = text(
+                "●", sp(18, 14),
+                i == kinoHeroIndex ? ACCENT : 0x99FFFFFF, true);
+            dot.setPadding(0, 0, dp(7), 0);
+            dots.addView(dot);
+        }
+
+        if (!App.tv) {
+            TextView hint = text(
+                "SWIPE TO EXPLORE", sp(12, 10), 0xFFD4CFE8, false);
+            hint.setPadding(dp(12), 0, 0, 0);
+            dots.addView(hint);
+        }
+
+        content.addView(dots);
+        hero.addView(content,
+            new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
+
+        focusable(hero, dp(18));
+        hero.setContentDescription(
+            "Featured movie: " + title.name + ". Open details.");
+
+        hero.setOnClickListener(v -> startActivity(
             new Intent(this, TitleActivity.class)
                 .putExtra("id", title.id)
                 .putExtra("type", title.type)
@@ -311,13 +385,66 @@ public class Home extends Activity {
                 .putExtra("poster", title.poster)
                 .putExtra("anime", title.anime)
         ));
-        content.addView(details,
-            new LinearLayout.LayoutParams(-2, -2));
 
-        hero.addView(content,
-            new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
+        hero.setOnTouchListener((v, event) -> {
+            switch (event.getActionMasked()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    kinoTouchX = event.getX();
+                    kinoTouchY = event.getY();
+                    return true;
 
-        if (firstCard == null) firstCard = details;
+                case android.view.MotionEvent.ACTION_MOVE:
+                    float mx = event.getX() - kinoTouchX;
+                    float my = event.getY() - kinoTouchY;
+                    if (Math.abs(mx) > dp(12)
+                            && Math.abs(mx) > Math.abs(my))
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                    return true;
+
+                case android.view.MotionEvent.ACTION_UP:
+                    float dx = event.getX() - kinoTouchX;
+                    float dy = event.getY() - kinoTouchY;
+
+                    if (Math.abs(dx) > dp(48)
+                            && Math.abs(dx) > Math.abs(dy) * 1.2f)
+                        kinoAdvanceHero(dx < 0 ? 1 : -1);
+                    else if (Math.abs(dx) < dp(20)
+                            && Math.abs(dy) < dp(20))
+                        v.performClick();
+                    return true;
+
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    return true;
+
+                default:
+                    return true;
+            }
+        });
+
+        hero.setOnKeyListener((v, key, event) -> {
+            if (event.getAction()
+                    != android.view.KeyEvent.ACTION_UP) return false;
+            if (key == android.view.KeyEvent.KEYCODE_DPAD_RIGHT) {
+                kinoAdvanceHero(1);
+                return true;
+            }
+            if (key == android.view.KeyEvent.KEYCODE_DPAD_LEFT) {
+                kinoAdvanceHero(-1);
+                return true;
+            }
+            return false;
+        });
+
+        if (firstCard == null) firstCard = hero;
+
+        if (kinoHeroTitles.size() > 1) {
+            kinoHeroRotation = () -> {
+                if (hero.isAttachedToWindow()
+                        && tab == 0 && hero == kinoHeroView)
+                    kinoAdvanceHero(1);
+            };
+            hero.postDelayed(kinoHeroRotation, 8000);
+        }
     }
     /** One row of site cards. Picks come first; a long category shows its first batch and an "All" card for the rest. */
     void siteRow(String category, List<Sites.Site> sites) {
