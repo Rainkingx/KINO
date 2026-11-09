@@ -1,15 +1,18 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="48dp" android:height="48dp" android:viewportWidth="64" android:viewportHeight="64">
-    <!-- the launcher icon without its background: a soft ring and the gradient play triangle -->
-    <group android:translateX="-22" android:translateY="-22">
-        <path android:pathData="M54,24a30,30 0 1,1 0,60a30,30 0 1,1 0,-60z" android:strokeColor="#66FF3B5C" android:strokeWidth="2.5" android:fillColor="#00000000"/>
-        <path android:pathData="M46,38L46,70L72,54Z" android:strokeLineJoin="round" android:strokeWidth="6" android:strokeColor="#FFFF3B5C">
-            <aapt:attr name="android:fillColor">
-                <gradient android:type="linear" android:startX="46" android:startY="38" android:endX="72" android:endY="70">
-                    <item android:offset="0" android:color="#FFFF6A85"/>
-                    <item android:offset="1" android:color="#FFFF2E58"/>
-                </gradient>
-            </aapt:attr>
-        </path>
-    </group>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#8B6DFF"
+        android:pathData="M26,22h12v64h-12z" />
+    <path
+        android:fillColor="#8B6DFF"
+        android:pathData="M42,54L53,54L82,22L71,22z" />
+    <path
+        android:fillColor="#8B6DFF"
+        android:pathData="M42,54L53,54L82,86L71,86z" />
+    <path
+        android:fillColor="#4ED8FF"
+        android:pathData="M54,39L75,54L54,69z" />
 </vector>
