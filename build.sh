@@ -29,7 +29,7 @@ mkdir -p build/flavor-tv && echo tv > build/flavor-tv/flavor
 $BT/aapt2 link -o build/r.apk -I "$JAR" --manifest AndroidManifest.xml build/res.zip -A assets -A build/flavor-tv --java build \
   --min-sdk-version 26 --target-sdk-version 34 $VERSION
 javac -encoding UTF-8 -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath "$JAR:$BT/core-lambda-stubs.jar" -classpath "$LIBS" \
-  -d build/classes $(find src build/me -name '*.java')
+  -d build/classes $(find src build/com -name '*.java')
 $BT/d8 --lib "$JAR" --min-api 26 --output build $(find build/classes -name '*.class') $(ls libs/*.jar)
 mkdir -p build/lib && cp -R jni/* build/lib/
 

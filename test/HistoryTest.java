@@ -1,6 +1,6 @@
 // SDK=~/Library/Android/sdk; org.json from maven (json-20231013.jar):
-// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:json.jar" -sourcepath src:build -d /tmp/history src/me/champdev/weblock/History.java test/HistoryTest.java && java -cp /tmp/history:json.jar me.champdev.weblock.HistoryTest
-package me.champdev.weblock;
+// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:json.jar" -sourcepath src:build -d /tmp/history src/com/rainkingx/kino/History.java test/HistoryTest.java && java -cp /tmp/history:json.jar com.rainkingx.kino.HistoryTest
+package com.rainkingx.kino;
 
 public class HistoryTest {
     static int fails;

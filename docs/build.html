@@ -30,7 +30,7 @@ warp/build.sh     # builds the WARP helper into jni/ with the NDK
 
 <h2 id="layout">Project layout</h2>
 <table><tr><th>Path</th><th>What is in it</th></tr>
-<tr><td><code>src/me/champdev/weblock/</code></td><td>The app (plain Java): <code>Home</code> (tabs), <code>WebActivity</code> (the browser), <code>PlayerActivity</code> (the player), <code>Sniffer</code> (stream detection), <code>Iptv*</code>, <code>Catalog</code>, <code>Sites</code>, <code>Warp</code>, <code>AdBlock</code></td></tr>
+<tr><td><code>src/com/rainkingx/kino/</code></td><td>The app (plain Java): <code>Home</code> (tabs), <code>WebActivity</code> (the browser), <code>PlayerActivity</code> (the player), <code>Sniffer</code> (stream detection), <code>Iptv*</code>, <code>Catalog</code>, <code>Sites</code>, <code>Warp</code>, <code>AdBlock</code></td></tr>
 <tr><td><code>assets/</code></td><td>Scripts injected into pages: <code>frame.js</code> (server, quality and episode finder, stream sniffing), <code>spatnav.js</code> (remote navigation), <code>roles.js</code>, <code>autosearch.js</code></td></tr>
 <tr><td><code>warp/</code></td><td>The Go helper: a userspace WireGuard client exposing a local HTTP proxy</td></tr>
 <tr><td><code>libs/</code></td><td>Media3, AndroidX WebKit and Guava as plain jars</td></tr>
@@ -61,7 +61,7 @@ git push origin v2.12.0</code></pre>
 
 <h2 id="emulator">Emulator testing</h2>
 <p><code>TEST_EXPORT=1 ./build.sh</code> builds <code>FMHYPlay-TV-test.apk</code> and <code>FMHYPlay-Android-test.apk</code>. They export the browser and IPTV screens so you can open a test page from the command line, and the TV one also answers the Home key (an emulator image without a launcher shows a black screen otherwise).</p>
-<pre><code>adb shell am start -n me.champdev.weblock/.WebActivity \
+<pre><code>adb shell am start -n com.rainkingx.kino/.WebActivity \
   --es site Test --es siteUrl http://10.0.2.2:8000/ --es url http://10.0.2.2:8000/test.html</code></pre>
 </article>
 </div></main>

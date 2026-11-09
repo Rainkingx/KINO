@@ -1,6 +1,6 @@
 // SDK=~/Library/Android/sdk:
-// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:$(ls libs/*.jar | tr '\n' ':')" -sourcepath src:build -d /tmp/pstats src/me/champdev/weblock/PlayerStats.java test/PlayerStatsTest.java && java -cp "/tmp/pstats:$(ls libs/*.jar | tr '\n' ':')" me.champdev.weblock.PlayerStatsTest
-package me.champdev.weblock;
+// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:$(ls libs/*.jar | tr '\n' ':')" -sourcepath src:build -d /tmp/pstats src/com/rainkingx/kino/PlayerStats.java test/PlayerStatsTest.java && java -cp "/tmp/pstats:$(ls libs/*.jar | tr '\n' ':')" com.rainkingx.kino.PlayerStatsTest
+package com.rainkingx.kino;
 
 public class PlayerStatsTest {
     static int fails;

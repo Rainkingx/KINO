@@ -1,6 +1,6 @@
 // SDK=~/Library/Android/sdk; org.json from maven (android.jar only has stubs):
-// javac -cp $SDK/platforms/android-34/android.jar:libs/androidx-webkit-1.12.1.jar:json.jar -sourcepath src -d /tmp/cat src/me/champdev/weblock/Catalog.java test/CatalogTest.java && java -cp /tmp/cat:json.jar me.champdev.weblock.CatalogTest
-package me.champdev.weblock;
+// javac -cp $SDK/platforms/android-34/android.jar:libs/androidx-webkit-1.12.1.jar:json.jar -sourcepath src -d /tmp/cat src/com/rainkingx/kino/Catalog.java test/CatalogTest.java && java -cp /tmp/cat:json.jar com.rainkingx.kino.CatalogTest
+package com.rainkingx.kino;
 
 import org.json.JSONObject;
 

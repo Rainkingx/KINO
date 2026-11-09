@@ -1,9 +1,9 @@
 // Tests SubOs.java (OpenSubtitles legacy search) and SubFetch.java (download -> local UTF-8 file). From the project folder:
 // JSON=~/.gradle/caches/modules-2/files-2.1/org.json/json/20240303/ebb88e8fb5122b7506d5cf1d69f1ccdb790d22a/json-20240303.jar
-// javac --release 8 -cp $JSON -d /tmp/sub src/me/champdev/weblock/SubOs.java src/me/champdev/weblock/SubFetch.java test/SubFetchTest.java && java -cp /tmp/sub:$JSON me.champdev.weblock.SubFetchTest
+// javac --release 8 -cp $JSON -d /tmp/sub src/com/rainkingx/kino/SubOs.java src/com/rainkingx/kino/SubFetch.java test/SubFetchTest.java && java -cp /tmp/sub:$JSON com.rainkingx.kino.SubFetchTest
 // The offline part uses synthetic bytes. The LIVE part (last) hits rest.opensubtitles.org (2 searches) and dl.opensubtitles.org
 // (2 downloads; the site allows about 200 a day per address). It prints SKIP when offline; add -Dsub.offline=1 to skip it on purpose.
-package me.champdev.weblock;
+package com.rainkingx.kino;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

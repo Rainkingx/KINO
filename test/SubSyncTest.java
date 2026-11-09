@@ -1,5 +1,5 @@
-// javac -d /tmp/subsync src/me/champdev/weblock/SubSync.java test/SubSyncTest.java && java -cp /tmp/subsync me.champdev.weblock.SubSyncTest
-package me.champdev.weblock;
+// javac -d /tmp/subsync src/com/rainkingx/kino/SubSync.java test/SubSyncTest.java && java -cp /tmp/subsync com.rainkingx.kino.SubSyncTest
+package com.rainkingx.kino;
 
 import java.util.ArrayList;
 import java.util.Arrays;

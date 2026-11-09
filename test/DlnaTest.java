@@ -1,7 +1,7 @@
 // Needs a renderer on the network (scratchpad dlna/renderer.py fakes one). From the project folder:
-// javac -nowarn -cp $SDK/platforms/android-34/android.jar:<org.json jar>:build -sourcepath src:build -d /tmp/dlna src/me/champdev/weblock/Dlna.java test/DlnaTest.java
-// java -cp /tmp/dlna:<org.json jar> me.champdev.weblock.DlnaTest
-package me.champdev.weblock;
+// javac -nowarn -cp $SDK/platforms/android-34/android.jar:<org.json jar>:build -sourcepath src:build -d /tmp/dlna src/com/rainkingx/kino/Dlna.java test/DlnaTest.java
+// java -cp /tmp/dlna:<org.json jar> com.rainkingx.kino.DlnaTest
+package com.rainkingx.kino;
 
 import java.util.Map;
 import java.util.TreeMap;

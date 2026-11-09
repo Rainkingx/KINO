@@ -1,5 +1,5 @@
-// javac -d /tmp/sniffer $(find test/stubs -name '*.java') src/me/champdev/weblock/Sniffer.java test/SnifferTest.java && java -cp /tmp/sniffer me.champdev.weblock.SnifferTest
-package me.champdev.weblock;
+// javac -d /tmp/sniffer $(find test/stubs -name '*.java') src/com/rainkingx/kino/Sniffer.java test/SnifferTest.java && java -cp /tmp/sniffer com.rainkingx.kino.SnifferTest
+package com.rainkingx.kino;
 
 import android.os.Handler;
 

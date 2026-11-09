@@ -1,6 +1,6 @@
 // SDK=~/Library/Android/sdk; org.json from maven (android.jar only has stubs):
-// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:$(ls libs/*.jar | tr '\n' ':')json.jar" -sourcepath src -d /tmp/skips src/me/champdev/weblock/Skips.java test/SkipsTest.java && java -cp /tmp/skips:json.jar me.champdev.weblock.SkipsTest
-package me.champdev.weblock;
+// javac -implicit:none -cp "$SDK/platforms/android-34/android.jar:$(ls libs/*.jar | tr '\n' ':')json.jar" -sourcepath src -d /tmp/skips src/com/rainkingx/kino/Skips.java test/SkipsTest.java && java -cp /tmp/skips:json.jar com.rainkingx.kino.SkipsTest
+package com.rainkingx.kino;
 
 import java.util.List;
 

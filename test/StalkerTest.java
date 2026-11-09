@@ -1,7 +1,7 @@
 // Runs Stalker.java against the fake portal test/fake_stalker.py (started on port 8013 by this test). From the project folder:
 // JSON=~/.gradle/caches/modules-2/files-2.1/org.json/json/20240303/ebb88e8fb5122b7506d5cf1d69f1ccdb790d22a/json-20240303.jar
-// javac -cp $JSON -d /tmp/stalker src/me/champdev/weblock/Stalker.java test/StalkerTest.java && java -cp /tmp/stalker:$JSON me.champdev.weblock.StalkerTest
-package me.champdev.weblock;
+// javac -cp $JSON -d /tmp/stalker src/com/rainkingx/kino/Stalker.java test/StalkerTest.java && java -cp /tmp/stalker:$JSON com.rainkingx.kino.StalkerTest
+package com.rainkingx.kino;
 
 import java.net.HttpURLConnection;
 import java.net.Proxy;

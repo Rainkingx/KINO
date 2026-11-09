@@ -1,5 +1,5 @@
-// javac -d /tmp/cats src/me/champdev/weblock/Cats.java test/CatsTest.java && java -cp /tmp/cats me.champdev.weblock.CatsTest
-package me.champdev.weblock;
+// javac -d /tmp/cats src/com/rainkingx/kino/Cats.java test/CatsTest.java && java -cp /tmp/cats com.rainkingx.kino.CatsTest
+package com.rainkingx.kino;
 
 import java.util.Arrays;
 import java.util.List;
