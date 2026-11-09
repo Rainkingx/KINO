@@ -4,6 +4,7 @@
 # static 32-bit one a "flooder". Needs Go and an Android NDK (ANDROID_NDK_HOME, else the newest in the SDK).
 set -e
 cd "$(dirname "$0")"
+go mod tidy
 SDK=${ANDROID_HOME:-$HOME/Library/Android/sdk}
 NDK=${ANDROID_NDK_HOME:-$(ls -d "$SDK"/ndk/* | sort -V | tail -1)}
 BIN=$(ls -d "$NDK"/toolchains/llvm/prebuilt/*/bin | head -1)

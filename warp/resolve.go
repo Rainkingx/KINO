@@ -222,8 +222,8 @@ func dialTLS(ctx context.Context, ip, port, host string) (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := tls.Client(raw, apiTLS(host))
-	if err := c.HandshakeContext(ctx); err != nil {
+	c, err := handshakeWarpTLS(ctx, raw, host, apiTLS(host))
+	if err != nil {
 		raw.Close()
 		return nil, err
 	}

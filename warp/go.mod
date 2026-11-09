@@ -3,6 +3,7 @@ module fmhyplay/warp
 go 1.26.0
 
 require (
+	github.com/refraction-networking/utls v1.8.2
 	golang.org/x/crypto v0.58.0
 	golang.zx2c4.com/wireguard v0.0.0-20261006164505-2631ce99a06f
 )

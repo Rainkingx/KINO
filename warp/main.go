@@ -144,12 +144,13 @@ func register(timeout time.Duration) (*account, error) {
 	body, _ := json.Marshal(map[string]any{
 		"key": base64.StdEncoding.EncodeToString(pub), "install_id": "", "fcm_token": "",
 		"tos": time.Now().UTC().Format("2006-01-02T15:04:05.000Z"), "model": "PC", "type": "Android", "locale": "en_US",
+		"os_version": "16.0.0", "key_type": "curve25519", "tunnel_type": "wireguard", "serial_number": "",
 	})
-	req, _ := http.NewRequest("POST", "https://api.cloudflareclient.com/v0a2158/reg", bytes.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "okhttp/3.12.1")
-	req.Header.Set("CF-Client-Version", "a-6.11-2158")
-	resp, err := (&http.Client{Timeout: timeout, Transport: &http.Transport{DialTLSContext: dialAPI, DisableKeepAlives: true}}).Do(req)
+	req, _ := http.NewRequest("POST", "https://api.cloudflareclient.com/v0a5641/reg", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("User-Agent", "1.1.1.1/6.38.9-5641 (Android 16.0.0)")
+	req.Header.Set("CF-Client-Version", "a-6.38.9-5641")
+	resp, err := (&http.Client{Timeout: timeout, Transport: &http.Transport{DialTLSContext: dialAPI}}).Do(req)
 	if err != nil {
 		return nil, err
 	}
