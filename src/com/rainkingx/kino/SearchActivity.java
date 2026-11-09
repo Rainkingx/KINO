@@ -51,6 +51,8 @@ public class SearchActivity extends Home {
         iconize(box, R.drawable.ic_search, MUTED);
         box.setTextColor(TEXT);
         focusable(box, dp(14));
+        String initialQuery = getIntent().getStringExtra("query");
+        if (initialQuery != null) query = initialQuery;
         box.setText(query);
         box.setSelection(query.length());
         box.addTextChangedListener(new TextWatcher() {

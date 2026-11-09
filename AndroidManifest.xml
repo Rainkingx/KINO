@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
     <uses-feature android:name="android.software.leanback" android:required="false"/>
 
-    <application android:name=".App" android:label="KINO" android:icon="@mipmap/ic_launcher" android:banner="@drawable/banner"
+    <application android:name=".App" android:label="KINO" android:icon="@drawable/kino_logo" android:banner="@drawable/banner"
         android:theme="@style/AppTheme" android:usesCleartextTraffic="true" android:supportsRtl="true" android:extractNativeLibs="true">
         <activity android:name=".Home" android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode">

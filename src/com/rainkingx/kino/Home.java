@@ -628,7 +628,7 @@ public class Home extends Activity {
         if (App.tv) bar.setPadding(side, dp(10), side - slack, 0);
         else bar.setPadding(dp(12), dp(6), dp(6), dp(2));
         ImageView logo = new ImageView(this);
-        logo.setImageResource(R.drawable.ic_logo);
+        logo.setImageResource(R.drawable.kino_logo);
         logo.setScaleType(ImageView.ScaleType.CENTER_CROP);
         bar.addView(logo, new LinearLayout.LayoutParams(u(40, 28), u(40, 28)));
         TextView name = text("KINO", sp(24, 18), TEXT, true);
@@ -636,9 +636,9 @@ public class Home extends Activity {
         android.text.SpannableString brand = new android.text.SpannableString("KINO");
         brand.setSpan(new android.text.style.ForegroundColorSpan(ACCENT), 0, 1, 0);
         name.setText(brand);
-        name.setPadding(dp(4), 0, u(24, 10), 0);
+        name.setPadding(dp(4), 0, dp(8), 0);
         // A phone shows the logo alone, so Search gets the room; a TV has width for the name
-        if (App.tv) bar.addView(name);
+        bar.addView(name);
         else ((LinearLayout.LayoutParams) logo.getLayoutParams()).rightMargin = dp(8);
         // WARP and ad block state left of Search on every tab (icons only on a phone, where the row is narrow)
         warpChip = chip(v -> {
@@ -650,8 +650,6 @@ public class Home extends Activity {
             App.prefs.edit().putBoolean("adblock", !AdBlock.enabled()).apply();
             updateChips();
         });
-        bar.addView(warpChip);
-        bar.addView(adChip);
         updateChips();
         // One search for everything, from every tab: movies, series, IPTV channels and sites
         TextView search = chip(v -> startActivity(new Intent(this, SearchActivity.class)));
@@ -663,6 +661,75 @@ public class Home extends Activity {
         LinearLayout.LayoutParams sl = (LinearLayout.LayoutParams) search.getLayoutParams();
         sl.width = 0;
         sl.weight = 1;   // fills whatever the screen leaves
+        // KINO expanding search
+        if (!App.tv) {
+            search.setText("");
+            search.setGravity(Gravity.CENTER);
+            search.setPadding(dp(10), dp(8), dp(10), dp(8));
+            search.setCompoundDrawablePadding(0);
+            sl.width = dp(44);
+            sl.weight = 0;
+
+            bar.setLayoutTransition(
+                new android.animation.LayoutTransition());
+
+            search.setOnClickListener(v -> {
+                logo.setVisibility(View.GONE);
+                name.setVisibility(View.GONE);
+                search.setVisibility(View.GONE);
+
+                android.widget.EditText field =
+                    new android.widget.EditText(this);
+                field.setSingleLine(true);
+                field.setHint("Search movies, TV...");
+                field.setTextColor(TEXT);
+                field.setHintTextColor(MUTED);
+                field.setTextSize(16);
+                field.setPadding(dp(12), 0, dp(8), 0);
+                field.setBackground(rounded(CARD, dp(12)));
+                field.setImeOptions(
+                    android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH);
+
+                LinearLayout.LayoutParams fp =
+                    new LinearLayout.LayoutParams(0, dp(44), 1);
+
+                int position = bar.indexOfChild(search) + 1;
+                bar.addView(field, position, fp);
+
+                TextView close = text("×", 24, TEXT, false);
+                close.setGravity(Gravity.CENTER);
+                close.setContentDescription("Close search");
+                bar.addView(close, position + 1,
+                    new LinearLayout.LayoutParams(dp(40), dp(44)));
+
+                close.setOnClickListener(x -> {
+                    bar.removeView(field);
+                    bar.removeView(close);
+                    logo.setVisibility(View.VISIBLE);
+                    name.setVisibility(View.VISIBLE);
+                    search.setVisibility(View.VISIBLE);
+                });
+
+                field.setOnEditorActionListener((tv, action, event) -> {
+                    String query = field.getText().toString().trim();
+                    if (!query.isEmpty()) {
+                        startActivity(new Intent(this,
+                            SearchActivity.class)
+                            .putExtra("query", query));
+                    }
+                    return true;
+                });
+
+                field.requestFocus();
+                field.post(() -> {
+                    android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager)
+                        getSystemService(INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(field,
+                        android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                });
+            });
+        }
         bar.addView(search);
         bar.addView(voiceChip(v -> startActivity(new Intent(this, SearchActivity.class).putExtra("voice", true))));
         return bar;
