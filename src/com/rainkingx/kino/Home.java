@@ -639,7 +639,7 @@ public class Home extends Activity {
         name.setPadding(dp(4), 0, dp(8), 0);
         // A phone shows the logo alone, so Search gets the room; a TV has width for the name
         bar.addView(name);
-        else ((LinearLayout.LayoutParams) logo.getLayoutParams()).rightMargin = dp(8);
+        ((LinearLayout.LayoutParams) logo.getLayoutParams()).rightMargin = dp(8);
         // WARP and ad block state left of Search on every tab (icons only on a phone, where the row is narrow)
         warpChip = chip(v -> {
             boolean on = Warp.state == Warp.State.ON || Warp.state == Warp.State.CONNECTING;
