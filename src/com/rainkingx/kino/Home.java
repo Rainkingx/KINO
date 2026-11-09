@@ -46,6 +46,9 @@ public class Home extends Activity {
         @Override protected int sizeOf(String k, Bitmap b) { return b.getByteCount(); }
     };
 
+    static final java.util.concurrent.ConcurrentHashMap<
+        String, java.util.concurrent.FutureTask<Bitmap>> imageJobs =
+        new java.util.concurrent.ConcurrentHashMap<>();
     ScrollView page;
     LinearLayout col;
     static final int GREEN = 0xFF6EE7A0, AMBER = 0xFFFFC857;
@@ -438,6 +441,21 @@ public class Home extends Activity {
         if (firstCard == null) firstCard = hero;
 
         if (kinoHeroTitles.size() > 1) {
+            // Load the next two hero images before they appear.
+            for (int offset = 1;
+                    offset <= Math.min(2, kinoHeroTitles.size() - 1);
+                    offset++) {
+                Catalog.Title next = kinoHeroTitles.get(
+                    (kinoHeroIndex + offset) % kinoHeroTitles.size());
+
+                String nextUrl = next.background.isEmpty()
+                    ? next.poster : next.background;
+
+                if (!nextUrl.isEmpty() && images.get(nextUrl) == null) {
+                    final String preloadUrl = nextUrl;
+                    App.io.execute(() -> kinoCachedFetch(preloadUrl));
+                }
+            }
             kinoHeroRotation = () -> {
                 if (hero.isAttachedToWindow()
                         && tab == 0 && hero == kinoHeroView)
@@ -2053,18 +2071,53 @@ public class Home extends Activity {
     }
 
     // Small image loader: memory + disk cache, fetched through WARP
-    void loadImage(ImageView into, String url, View placeholder) {
-        into.setTag(url);
+    // Share image requests so identical URLs download and decode only once.
+    static Bitmap kinoCachedFetch(String url) {
         Bitmap hit = images.get(url);
-        if (hit != null) { show(into, hit, placeholder); return; }
-        App.io.execute(() -> {
-            Bitmap b = fetch(url);
-            if (b == null) return;
-            images.put(url, b);
-            runOnUiThread(() -> { if (url.equals(into.getTag())) show(into, b, placeholder); });
-        });
+        if (hit != null) return hit;
+
+        java.util.concurrent.FutureTask<Bitmap> mine =
+            new java.util.concurrent.FutureTask<>(() -> fetch(url));
+
+        java.util.concurrent.FutureTask<Bitmap> task =
+            imageJobs.putIfAbsent(url, mine);
+
+        if (task == null) {
+            task = mine;
+            mine.run();
+        }
+
+        try {
+            Bitmap result = task.get();
+            if (result != null) images.put(url, result);
+            return result;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (task == mine) imageJobs.remove(url, mine);
+        }
     }
 
+    void loadImage(ImageView into, String url, View placeholder) {
+        if (url == null || url.isEmpty()) return;
+        into.setTag(url);
+
+        Bitmap hit = images.get(url);
+        if (hit != null) {
+            show(into, hit, placeholder);
+            return;
+        }
+
+        App.io.execute(() -> {
+            Bitmap result = kinoCachedFetch(url);
+            if (result == null) return;
+
+            runOnUiThread(() -> {
+                if (url.equals(into.getTag()))
+                    show(into, result, placeholder);
+            });
+        });
+    }
     void show(ImageView into, Bitmap b, View placeholder) {
         into.setImageBitmap(b);
         if (placeholder != null) placeholder.setVisibility(View.GONE);
