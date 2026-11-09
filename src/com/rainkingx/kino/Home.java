@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** Start screen: Continue watching, then FMHY's streaming sites by category, then the user's own sites. */
 public class Home extends Activity {
-    static final int BG = 0xFF120E1A, CARD = 0xFF1E1828, ACCENT = 0xFFFF3B5C, TEXT = 0xFFF2EDF7, MUTED = 0xFF9A90A8;
+    static final int BG = 0xFF090B16, CARD = 0xFF17192B, ACCENT = 0xFF9670FF, TEXT = 0xFFF6F4FF, MUTED = 0xFFA6A3BC;
     static final LruCache<String, Bitmap> images = new LruCache<String, Bitmap>(24 * 1024 * 1024) {
         @Override protected int sizeOf(String k, Bitmap b) { return b.getByteCount(); }
     };
@@ -156,6 +156,7 @@ public class Home extends Activity {
 
     void buildHome() {
         col.addView(header());
+        kinoFeaturedHero();
         if (!Update.available().isEmpty()) col.addView(updateLine(Update.available()));
 
         List<History.Entry> history = History.list();
@@ -209,6 +210,115 @@ public class Home extends Activity {
         }
     }
 
+    // KINO cinematic featured movie
+    void kinoFeaturedHero() {
+        FrameLayout hero = new FrameLayout(this);
+        hero.setLayoutParams(new LinearLayout.LayoutParams(-1, u(335, 246)));
+        hero.setBackground(rounded(CARD, dp(18)));
+        hero.setClipToOutline(true);
+
+        TextView loading = text("FEATURED ON KINO", sp(24, 20), TEXT, true);
+        loading.setGravity(Gravity.CENTER);
+        hero.addView(loading, new FrameLayout.LayoutParams(-1, -1));
+        col.addView(hero);
+
+        final int generation = built;
+        List<Catalog.Title> cached = Catalog.cached("movie", "");
+        if (cached != null) {
+            kinoShowFeatured(hero, cached);
+        } else {
+            App.io.execute(() -> {
+                List<Catalog.Title> movies = Catalog.list("movie", "");
+                runOnUiThread(() -> {
+                    if (generation == built && tab == 0)
+                        kinoShowFeatured(hero, movies);
+                });
+            });
+        }
+    }
+
+    void kinoShowFeatured(FrameLayout hero, List<Catalog.Title> movies) {
+        hero.removeAllViews();
+
+        if (movies == null || movies.isEmpty()) {
+            TextView browse = text("DISCOVER MOVIES", sp(22, 18), TEXT, true);
+            browse.setGravity(Gravity.CENTER);
+            browse.setBackground(rounded(CARD, dp(18)));
+            focusable(browse, dp(18));
+            browse.setOnClickListener(v -> selectTab(1));
+            hero.addView(browse, new FrameLayout.LayoutParams(-1, -1));
+            if (firstCard == null) firstCard = browse;
+            return;
+        }
+
+        Catalog.Title picked = movies.get(0);
+        for (Catalog.Title candidate : movies) {
+            if (!candidate.background.isEmpty()) {
+                picked = candidate;
+                break;
+            }
+        }
+        final Catalog.Title title = picked;
+
+        ImageView artwork = new ImageView(this);
+        artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        hero.addView(artwork, new FrameLayout.LayoutParams(-1, -1));
+        String image = title.background.isEmpty() ? title.poster : title.background;
+        if (!image.isEmpty()) loadImage(artwork, image, null);
+
+        View shade = new View(this);
+        shade.setBackground(new GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[]{0x22090B16, 0x99090B16, 0xFA090B16}));
+        hero.addView(shade, new FrameLayout.LayoutParams(-1, -1));
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(u(24, 16), dp(16), u(24, 16), u(24, 16));
+
+        content.addView(text("FEATURED ON KINO", sp(13, 11), 0xFFB8A5FF, true));
+
+        TextView name = text(title.name, sp(38, 26), Color.WHITE, true);
+        name.setMaxLines(2);
+        name.setEllipsize(TextUtils.TruncateAt.END);
+        content.addView(name);
+
+        String meta = title.year;
+        if (!title.rating.isEmpty())
+            meta += (meta.isEmpty() ? "" : "  |  ") + "IMDb " + title.rating;
+        TextView metadata = text(meta, sp(15, 12), 0xFFDAD7E8, false);
+        content.addView(metadata);
+
+        if (!title.overview.isEmpty()) {
+            TextView synopsis = text(title.overview, sp(14, 12), 0xFFE1DEEB, false);
+            synopsis.setMaxLines(2);
+            synopsis.setEllipsize(TextUtils.TruncateAt.END);
+            synopsis.setPadding(0, dp(7), 0, dp(10));
+            content.addView(synopsis);
+        }
+
+        TextView details = text("VIEW DETAILS", sp(16, 13), Color.WHITE, true);
+        details.setGravity(Gravity.CENTER);
+        details.setPadding(dp(22), dp(12), dp(22), dp(12));
+        details.setBackground(rounded(ACCENT, dp(12)));
+        focusable(details, dp(12));
+        details.setOnClickListener(v -> startActivity(
+            new Intent(this, TitleActivity.class)
+                .putExtra("id", title.id)
+                .putExtra("type", title.type)
+                .putExtra("name", title.name)
+                .putExtra("year", title.year)
+                .putExtra("poster", title.poster)
+                .putExtra("anime", title.anime)
+        ));
+        content.addView(details,
+            new LinearLayout.LayoutParams(-2, -2));
+
+        hero.addView(content,
+            new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
+
+        if (firstCard == null) firstCard = details;
+    }
     /** One row of site cards. Picks come first; a long category shows its first batch and an "All" card for the rest. */
     void siteRow(String category, List<Sites.Site> sites) {
         LinearLayout row = row();
@@ -394,10 +504,10 @@ public class Home extends Activity {
         logo.setImageResource(R.drawable.ic_logo);
         logo.setScaleType(ImageView.ScaleType.CENTER_CROP);
         bar.addView(logo, new LinearLayout.LayoutParams(u(40, 28), u(40, 28)));
-        TextView name = text("FMHYPlay", sp(24, 18), TEXT, true);
+        TextView name = text("KINO", sp(24, 18), TEXT, true);
         // Written like the project banner: FMHY in white, Play in the accent red
-        android.text.SpannableString brand = new android.text.SpannableString("FMHYPlay");
-        brand.setSpan(new android.text.style.ForegroundColorSpan(ACCENT), 4, 8, 0);
+        android.text.SpannableString brand = new android.text.SpannableString("KINO");
+        brand.setSpan(new android.text.style.ForegroundColorSpan(ACCENT), 0, 1, 0);
         name.setText(brand);
         name.setPadding(dp(4), 0, u(24, 10), 0);
         // A phone shows the logo alone, so Search gets the room; a TV has width for the name
